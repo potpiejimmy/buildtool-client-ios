@@ -62,7 +62,7 @@
         <!--Start Task-->
         <scene sceneID="emK-Ia-Wml">
             <objects>
-                <tableViewController title="Start Task" id="MqY-d8-6dj" sceneMemberID="viewController">
+                <tableViewController title="Start Task" id="MqY-d8-6dj" customClass="StartTaskViewController" customModule="BuildTool" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="XGl-Ot-a3X">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -80,10 +80,14 @@
                             <outlet property="delegate" destination="MqY-d8-6dj" id="iT7-QT-yXm"/>
                         </connections>
                     </tableView>
+                    <connections>
+                        <segue destination="Ucb-V1-1lL" kind="unwind" identifier="exitSegue" unwindAction="returnedFromStartTaskList:" id="ddx-pY-PbQ"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ety-4S-j5u" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="Ucb-V1-1lL" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="750" y="564"/>
+            <point key="canvasLocation" x="793" y="564"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="8gi-fp-mQa">

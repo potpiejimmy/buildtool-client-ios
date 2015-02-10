@@ -10,6 +10,8 @@ import UIKit
 
 class MainListViewController: UITableViewController {
 
+    let BASE_URL = "http://www.doogetha.com/buildtool/res/jobs/w7-deffm0287/"
+    
     @IBOutlet weak var mainList: UITableView!
     
     var listData = NSMutableArray()
@@ -27,19 +29,20 @@ class MainListViewController: UITableViewController {
     }
     
     @IBAction func refresh(sender: AnyObject) {
-        TLWebRequester.get("http://www.doogetha.com/buildtool/res/jobs/w7-deffm0287",
+        self.navigationItem.rightBarButtonItem?.enabled = false;
+        TLWebRequester.request("GET", url: BASE_URL,
             {data in
                 // okay
-                println("Received list")
                 let jsonResult: NSArray = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSArray
-                println("AsSynchronous\(jsonResult)")
+                //println("AsSynchronous\(jsonResult)")
                 self.listData.removeAllObjects()
                 self.listData.addObjectsFromArray(jsonResult)
                 self.mainList.reloadData()
-                return
+                self.navigationItem.rightBarButtonItem?.enabled = true
             },
-            {result in
+            {() in
                 // failure
+                self.navigationItem.rightBarButtonItem?.enabled = true
                 return
         })
     }
@@ -73,6 +76,19 @@ class MainListViewController: UITableViewController {
         return cell
     }
 
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let alert = UIAlertController(title: "Delete entry", message: "Really delete?", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: {action in
+            TLWebRequester.request("DELETE", url: self.BASE_URL + ((self.listData[indexPath.row] as NSDictionary).objectForKey("name") as String).stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil),
+                {data in self.refresh(self)},
+                nil
+            )
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)}))
+        alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Cancel, handler: {action in self.tableView.deselectRowAtIndexPath(indexPath, animated: false)}))
+        
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -118,4 +134,12 @@ class MainListViewController: UITableViewController {
     }
     */
 
+    @IBAction func returnedFromStartTaskList(segue: UIStoryboardSegue) {
+        let startTaskView = segue.sourceViewController as StartTaskViewController
+        
+        TLWebRequester.request("GET", url: BASE_URL + startTaskView.selectedJob!.stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil) + "?set=pending",
+            {data in self.refresh(self)},
+            nil
+        )
+    }
 }

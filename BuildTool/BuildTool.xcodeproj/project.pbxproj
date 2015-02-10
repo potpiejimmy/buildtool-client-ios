@@ -14,6 +14,7 @@
 		2D7169F61A87FB6200373D44 /* BuildToolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7169F51A87FB6200373D44 /* BuildToolTests.swift */; };
 		2D716A001A88010F00373D44 /* MainListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7169FF1A88010F00373D44 /* MainListViewController.swift */; };
 		2D716A021A880F5300373D44 /* TLWebRequester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D716A011A880F5300373D44 /* TLWebRequester.swift */; };
+		2DB97E921A8AA8B500EBC8A4 /* StartTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB97E911A8AA8B500EBC8A4 /* StartTaskViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,7 @@
 		2D7169F51A87FB6200373D44 /* BuildToolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildToolTests.swift; sourceTree = "<group>"; };
 		2D7169FF1A88010F00373D44 /* MainListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainListViewController.swift; sourceTree = "<group>"; };
 		2D716A011A880F5300373D44 /* TLWebRequester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLWebRequester.swift; sourceTree = "<group>"; };
+		2DB97E911A8AA8B500EBC8A4 /* StartTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartTaskViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 				2D7169E81A87FB6200373D44 /* LaunchScreen.xib */,
 				2D7169DD1A87FB6200373D44 /* Supporting Files */,
 				2D716A011A880F5300373D44 /* TLWebRequester.swift */,
+				2DB97E911A8AA8B500EBC8A4 /* StartTaskViewController.swift */,
 			);
 			path = BuildTool;
 			sourceTree = "<group>";
@@ -215,6 +218,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DB97E921A8AA8B500EBC8A4 /* StartTaskViewController.swift in Sources */,
 				2D716A001A88010F00373D44 /* MainListViewController.swift in Sources */,
 				2D716A021A880F5300373D44 /* TLWebRequester.swift in Sources */,
 				2D7169E01A87FB6200373D44 /* AppDelegate.swift in Sources */,
