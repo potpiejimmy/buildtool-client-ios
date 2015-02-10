@@ -27,11 +27,11 @@ class MainListViewController: UITableViewController {
     }
     
     @IBAction func refresh(sender: AnyObject) {
-        TLWebRequester().get("http://www.doogetha.com/buildtool/res/jobs/w7-deffm0287",
+        TLWebRequester.get("http://www.doogetha.com/buildtool/res/jobs/w7-deffm0287",
             {data in
                 // okay
                 println("Received list")
-                var jsonResult: NSArray = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSArray
+                let jsonResult: NSArray = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSArray
                 println("AsSynchronous\(jsonResult)")
                 self.listData.removeAllObjects()
                 self.listData.addObjectsFromArray(jsonResult)

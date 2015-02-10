@@ -8,18 +8,9 @@
 
 import Foundation
 
-class TLWebRequester : NSObject {
+class TLWebRequester {
     
-    override init() {}
-    
-    var resultData : NSMutableData!
-    var doneOk: ((NSData)->Void)!
-    var doneFail: (()->Void)!
-    
-    func get(url : String, doneOk: (NSData)->Void, doneFail: ()->Void) {
-        self.doneOk = doneOk
-        self.doneFail = doneFail
-        
+    class func get(url : String, doneOk: (NSData)->Void, doneFail: ()->Void) {
         var req = NSMutableURLRequest()
         req.URL = NSURL(string: url)
         req.HTTPMethod = "GET"
@@ -27,9 +18,9 @@ class TLWebRequester : NSObject {
 
         NSURLConnection.sendAsynchronousRequest(req, queue: NSOperationQueue.mainQueue(), {(response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             if (error != nil) {
-                self.doneFail()
+                doneFail()
             } else {
-                self.doneOk(data)
+                doneOk(data)
             }
         })
 
