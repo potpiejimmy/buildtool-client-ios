@@ -10,11 +10,14 @@ import UIKit
 
 class MainListViewController: UITableViewController {
 
-    let BASE_URL = "http://www.doogetha.com/buildtool/res/jobs/w7-deffm0287/"
+    let BASE_URL = "http://www.doogetha.com/buildtool/res/jobs/test/w7-deffm0287/"
     
     @IBOutlet weak var mainList: UITableView!
+    @IBOutlet weak var loadIndicatorView: UIView!
     
     var listData = NSMutableArray()
+    
+    var isLoading = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,8 +31,21 @@ class MainListViewController: UITableViewController {
         refresh(self)
     }
     
+    func setLoading(loading: Bool) {
+        self.isLoading = loading
+        self.navigationItem.rightBarButtonItem?.enabled = !loading;
+        if (loading) {
+            (self.loadIndicatorView.viewWithTag(1) as UIActivityIndicatorView).startAnimating()
+            mainList.tableHeaderView = loadIndicatorView
+        } else {
+            (self.loadIndicatorView.viewWithTag(1) as UIActivityIndicatorView).stopAnimating()
+            mainList.tableHeaderView = nil
+        }
+        self.mainList.reloadData() // to fetch count 0 when loading
+    }
+    
     @IBAction func refresh(sender: AnyObject) {
-        self.navigationItem.rightBarButtonItem?.enabled = false;
+        self.setLoading(true)
         TLWebRequester.request("GET", url: BASE_URL,
             {data in
                 // okay
@@ -37,12 +53,11 @@ class MainListViewController: UITableViewController {
                 //println("AsSynchronous\(jsonResult)")
                 self.listData.removeAllObjects()
                 self.listData.addObjectsFromArray(jsonResult)
-                self.mainList.reloadData()
-                self.navigationItem.rightBarButtonItem?.enabled = true
+                self.setLoading(false)
             },
             {() in
                 // failure
-                self.navigationItem.rightBarButtonItem?.enabled = true
+                self.setLoading(false)
                 return
         })
     }
@@ -63,25 +78,31 @@ class MainListViewController: UITableViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return listData.count
+        return self.isLoading ? 0 : listData.count
     }
-
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("myTableCell", forIndexPath: indexPath) as UITableViewCell
 
         // Configure the cell...
         var item = listData[indexPath.row] as? NSDictionary
-        cell.textLabel?.text = item?.objectForKey("name") as? String
-        cell.detailTextLabel?.text = item?.objectForKey("state") as? String
+        let state = item?.objectForKey("state") as? String
+        let progress : Int? = state?.toInt()
+        
+        (cell.viewWithTag(1) as UILabel).text = item?.objectForKey("name") as? String
+        (cell.viewWithTag(2) as UILabel).text = progress == nil ? state : state! + " %"
+        (cell.viewWithTag(3) as UIProgressView).hidden = progress == nil
+        (cell.viewWithTag(3) as UIProgressView).progress = progress == nil ? 0 : Float(progress!)/100
         return cell
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let alert = UIAlertController(title: "Delete entry", message: "Really delete?", preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: {action in
+            self.setLoading(true)
             TLWebRequester.request("DELETE", url: self.BASE_URL + ((self.listData[indexPath.row] as NSDictionary).objectForKey("name") as String).stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil),
                 {data in self.refresh(self)},
-                nil
+                {() in self.setLoading(false)}
             )
             self.tableView.deselectRowAtIndexPath(indexPath, animated: true)}))
         alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Cancel, handler: {action in self.tableView.deselectRowAtIndexPath(indexPath, animated: false)}))
@@ -137,9 +158,10 @@ class MainListViewController: UITableViewController {
     @IBAction func returnedFromStartTaskList(segue: UIStoryboardSegue) {
         let startTaskView = segue.sourceViewController as StartTaskViewController
         
+        self.setLoading(true)
         TLWebRequester.request("GET", url: BASE_URL + startTaskView.selectedJob!.stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil) + "?set=pending",
             {data in self.refresh(self)},
-            nil
+            {() in self.setLoading(false)}
         )
     }
 }

@@ -10,24 +10,25 @@ import UIKit
 
 class StartTaskViewController: UITableViewController {
 
+    let sections = ["Build","Database","Deploy"]
     let jobList = [
-        "Resynch Current Sandbox",
+        ["Resynch Current Sandbox",
         "Build Project",
-        "Execute doEverything",
-        "Create Database HKG0",
+        "Execute doEverything"],
+        ["Create Database HKG0",
         "Populate Database HKG0",
         "DevSystemInit HKG0",
         "Disable Rops HKG0",
         "Create Database HKG1",
         "Populate Database HKG1",
         "DevSystemInit HKG1",
-        "Disable Rops HKG1",
-        "Deploy Server HKG0",
+        "Disable Rops HKG1"],
+        ["Deploy Server HKG0",
         "Deploy Rops HKG0",
         "Deploy Rars HKG0",
         "Deploy Server HKG1",
         "Deploy Rars HKG1",
-        "Deploy KKO"
+        "Deploy KKO"]
     ]
     
     var selectedJob : String?
@@ -38,27 +39,31 @@ class StartTaskViewController: UITableViewController {
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Return the number of sections.
-        return 1
+        return jobList.count
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return jobList.count
+        return jobList[section].count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("taskCell", forIndexPath: indexPath) as UITableViewCell
 
         // Configure the cell...
-        cell.textLabel?.text = jobList[indexPath.row]
+        cell.textLabel?.text = jobList[indexPath.section][indexPath.row]
 
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        self.selectedJob = jobList[indexPath.row]
+        self.selectedJob = jobList[indexPath.section][indexPath.row]
         self.performSegueWithIdentifier("exitSegue", sender: self)
     }
 
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return sections[section]
+    }
+    
     /*
     // MARK: - Navigation
 
