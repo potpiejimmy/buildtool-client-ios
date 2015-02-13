@@ -10,7 +10,7 @@ import UIKit
 
 class MainListViewController: UITableViewController {
 
-    let BASE_URL = "http://www.doogetha.com/buildtool/res/jobs/test/w7-deffm0287/"
+    let BASE_URL = "http://www.doogetha.com/buildtool/res/jobs/w7-deffm0287/"
     
     @IBOutlet weak var mainList: UITableView!
     @IBOutlet weak var loadIndicatorView: UIView!
@@ -41,7 +41,7 @@ class MainListViewController: UITableViewController {
             (self.loadIndicatorView.viewWithTag(1) as UIActivityIndicatorView).stopAnimating()
             mainList.tableHeaderView = nil
         }
-        self.mainList.reloadData() // to fetch count 0 when loading
+        self.mainList.reloadData() // update table
     }
     
     @IBAction func refresh(sender: AnyObject) {
@@ -49,10 +49,10 @@ class MainListViewController: UITableViewController {
         TLWebRequester.request("GET", url: BASE_URL,
             {data in
                 // okay
-                let jsonResult: NSArray = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSArray
+                let jsonResult: NSArray? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as? NSArray
                 //println("AsSynchronous\(jsonResult)")
                 self.listData.removeAllObjects()
-                self.listData.addObjectsFromArray(jsonResult)
+                if (jsonResult != nil) {self.listData.addObjectsFromArray(jsonResult!)}
                 self.setLoading(false)
             },
             {() in
@@ -72,7 +72,7 @@ class MainListViewController: UITableViewController {
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return 1
+        return self.isLoading ? 0 : 1
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -104,11 +104,15 @@ class MainListViewController: UITableViewController {
                 {data in self.refresh(self)},
                 {() in self.setLoading(false)}
             )
-            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)}))
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: false)}))
         alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Cancel, handler: {action in self.tableView.deselectRowAtIndexPath(indexPath, animated: false)}))
         
         self.presentViewController(alert, animated: true, completion: nil)
     }
+    
+    //override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    //    return CGFloat.min
+    //}
     
     /*
     // Override to support conditional editing of the table view.
