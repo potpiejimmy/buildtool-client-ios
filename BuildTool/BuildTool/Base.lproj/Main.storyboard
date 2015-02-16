@@ -34,11 +34,23 @@
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="4" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Feb 09, 14:34" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MMK-Je-uJg">
+                                            <rect key="frame" x="457" y="16" width="128" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="128" id="Ml8-om-yi9"/>
+                                                <constraint firstAttribute="height" constant="21" id="bUZ-Ac-qOO"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="Kwz-su-3YA" firstAttribute="leading" secondItem="TbY-5m-ZJF" secondAttribute="leadingMargin" constant="8" id="7LR-rh-AZF"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="Kwz-su-3YA" secondAttribute="trailing" constant="7" id="VnU-yA-e1G"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="MMK-Je-uJg" secondAttribute="trailing" constant="7" id="eea-WG-bKL"/>
                                         <constraint firstItem="Kwz-su-3YA" firstAttribute="top" secondItem="TbY-5m-ZJF" secondAttribute="topMargin" constant="33" id="gwh-yh-vEX"/>
+                                        <constraint firstItem="MMK-Je-uJg" firstAttribute="top" secondItem="TbY-5m-ZJF" secondAttribute="topMargin" constant="8" id="qAg-e3-atL"/>
                                     </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>

@@ -66,6 +66,27 @@ class MainListViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    class func formatListItemDateTime(time : UInt64) -> String {
+        let today = NSDate()
+        let itemTime = NSDate(timeIntervalSince1970: NSTimeInterval(time/1000))
+        
+        var cal = NSCalendar.currentCalendar()
+        var formatter = NSDateFormatter();
+        
+        let todayComp    = cal.components(NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth |  NSCalendarUnit.CalendarUnitDay, fromDate: today)
+        let itemTimeComp = cal.components(NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth |  NSCalendarUnit.CalendarUnitDay, fromDate: itemTime)
+        
+        if (todayComp.day == itemTimeComp.day &&
+            todayComp.month == itemTimeComp.month &&
+            todayComp.year == itemTimeComp.year) {
+            formatter.dateFormat = "HH:mm"
+        } else {
+            formatter.dateFormat = "MMM dd, HH:mm"
+        }
+        
+        return formatter.stringFromDate(itemTime)
+    }
 
     // MARK: - Table view data source
 
@@ -87,12 +108,14 @@ class MainListViewController: UITableViewController {
         // Configure the cell...
         var item = listData[indexPath.row] as? NSDictionary
         let state = item?.objectForKey("state") as? String
+        var lastmodified = item?.objectForKey("lastmodified") as? NSNumber
         let progress : Int? = state?.toInt()
         
         (cell.viewWithTag(1) as UILabel).text = item?.objectForKey("name") as? String
         (cell.viewWithTag(2) as UILabel).text = progress == nil ? state : state! + " %"
         (cell.viewWithTag(3) as UIProgressView).hidden = progress == nil
         (cell.viewWithTag(3) as UIProgressView).progress = progress == nil ? 0 : Float(progress!)/100
+        (cell.viewWithTag(4) as UILabel).text = MainListViewController.formatListItemDateTime(UInt64((lastmodified?.longLongValue)!))
         return cell
     }
 
