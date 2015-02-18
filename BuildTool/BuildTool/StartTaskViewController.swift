@@ -10,8 +10,10 @@ import UIKit
 
 class StartTaskViewController: UITableViewController {
 
-    let sections = ["Build","Database","Deploy"]
-    let jobList = [
+    let BASE_URL = "http://www.doogetha.com/buildtool/res/params/w7-deffm0287/"
+    
+    var sections = ["Build","Database","Deploy"]
+    var jobList = [
         ["Resynch Current Sandbox",
         "Build Project",
         "Execute doEverything"],
@@ -31,12 +33,70 @@ class StartTaskViewController: UITableViewController {
         "Deploy KKO"]
     ]
     
+    @IBOutlet weak var mainList: UITableView!
+    @IBOutlet weak var loadIndicatorView: UIView!
+    
+    var isLoading = false
+    
     var selectedJob : String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        refresh();
+    }
 
+    func setLoading(loading: Bool) {
+        self.isLoading = loading
+        self.navigationItem.rightBarButtonItem?.enabled = !loading;
+        if (loading) {
+            (self.loadIndicatorView.viewWithTag(1) as UIActivityIndicatorView).startAnimating()
+            mainList.tableHeaderView = loadIndicatorView
+        } else {
+            (self.loadIndicatorView.viewWithTag(1) as UIActivityIndicatorView).stopAnimating()
+            mainList.tableHeaderView = nil
+        }
+        self.mainList.reloadData() // update table
+    }
+    
+    func refresh() {
+        self.setLoading(true)
+        TLWebRequester.request("GET", url: BASE_URL + "jobs",
+            {data in
+                // okay
+                let jsonResult: NSObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as? NSObject
+//                println("Joblist\(jsonResult)")
+                if (jsonResult != nil) {
+                    self.sections.removeAll(keepCapacity: true)
+                    self.jobList.removeAll(keepCapacity: true)
+                    let jobListJsonString = jsonResult?.valueForKey("value") as? String
+                    let jobListJsonStringData = jobListJsonString?.dataUsingEncoding(NSUTF8StringEncoding)
+                    let jobListJson: NSArray? = NSJSONSerialization.JSONObjectWithData(jobListJsonStringData!, options: NSJSONReadingOptions.MutableContainers, error: nil) as? NSArray
+                    var sectionList: Array<String> = []
+                    for item in jobListJson! {
+                        var itemString: String = item as String
+                        if (itemString[itemString.startIndex] == "-") {
+                            itemString = itemString.substringFromIndex(itemString.startIndex.successor())
+                            self.sections.append(itemString)
+                            if (sectionList.count > 0) {self.jobList.append(sectionList)}
+                            sectionList = []
+                        } else {
+                            sectionList.append(itemString)
+                        }
+                    }
+                    if (sectionList.count > 0) {self.jobList.append(sectionList)}
+                }
+                self.setLoading(false)
+            },
+            {() in
+                // failure
+                self.setLoading(false)
+                return
+        })
+    }
+    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Return the number of sections.
         return jobList.count

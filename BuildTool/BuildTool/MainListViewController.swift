@@ -120,15 +120,20 @@ class MainListViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let alert = UIAlertController(title: "Delete entry", message: "Really delete?", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "Yes", style: UIAlertActionStyle.Default, handler: {action in
+        let alert = UIAlertController(title: nil, message: "Select Action", preferredStyle: UIAlertControllerStyle.ActionSheet)
+        alert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.Default, handler: {action in
+            self.startTask(((self.listData[indexPath.row] as NSDictionary).objectForKey("name") as String))
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
+        }))
+        alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Default, handler: {action in
             self.setLoading(true)
             TLWebRequester.request("DELETE", url: self.BASE_URL + ((self.listData[indexPath.row] as NSDictionary).objectForKey("name") as String).stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil),
                 {data in self.refresh(self)},
                 {() in self.setLoading(false)}
             )
-            self.tableView.deselectRowAtIndexPath(indexPath, animated: false)}))
-        alert.addAction(UIAlertAction(title: "No", style: UIAlertActionStyle.Cancel, handler: {action in self.tableView.deselectRowAtIndexPath(indexPath, animated: false)}))
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {action in self.tableView.deselectRowAtIndexPath(indexPath, animated: false)}))
         
         self.presentViewController(alert, animated: true, completion: nil)
     }
@@ -185,8 +190,12 @@ class MainListViewController: UITableViewController {
     @IBAction func returnedFromStartTaskList(segue: UIStoryboardSegue) {
         let startTaskView = segue.sourceViewController as StartTaskViewController
         
+        startTask(startTaskView.selectedJob!)
+    }
+    
+    func startTask(taskName: String) {
         self.setLoading(true)
-        TLWebRequester.request("GET", url: BASE_URL + startTaskView.selectedJob!.stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil) + "?set=pending",
+        TLWebRequester.request("GET", url: BASE_URL + taskName.stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil) + "?set=pending",
             {data in self.refresh(self)},
             {() in self.setLoading(false)}
         )
