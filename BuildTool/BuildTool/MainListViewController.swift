@@ -127,7 +127,7 @@ class MainListViewController: UITableViewController {
         }))
         alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Default, handler: {action in
             self.setLoading(true)
-            TLWebRequester.request("DELETE", url: self.BASE_URL + ((self.listData[indexPath.row] as NSDictionary).objectForKey("name") as String).stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil),
+            TLWebRequester.request("DELETE", url: self.BASE_URL + ((self.listData[indexPath.row] as NSDictionary).objectForKey("name") as String).stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())!,
                 {data in self.refresh(self)},
                 {() in self.setLoading(false)}
             )
@@ -195,7 +195,7 @@ class MainListViewController: UITableViewController {
     
     func startTask(taskName: String) {
         self.setLoading(true)
-        TLWebRequester.request("GET", url: BASE_URL + taskName.stringByReplacingOccurrencesOfString(" ", withString: "%20", options: NSStringCompareOptions.LiteralSearch, range: nil) + "?set=pending",
+        TLWebRequester.request("GET", url: BASE_URL + taskName.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())! + "?set=pending",
             {data in self.refresh(self)},
             {() in self.setLoading(false)}
         )
