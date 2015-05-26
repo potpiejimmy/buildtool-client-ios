@@ -35,10 +35,10 @@ class MainListViewController: UITableViewController {
         self.isLoading = loading
         self.navigationItem.rightBarButtonItem?.enabled = !loading;
         if (loading) {
-            (self.loadIndicatorView.viewWithTag(1) as UIActivityIndicatorView).startAnimating()
+            (self.loadIndicatorView.viewWithTag(1) as! UIActivityIndicatorView).startAnimating()
             mainList.tableHeaderView = loadIndicatorView
         } else {
-            (self.loadIndicatorView.viewWithTag(1) as UIActivityIndicatorView).stopAnimating()
+            (self.loadIndicatorView.viewWithTag(1) as! UIActivityIndicatorView).stopAnimating()
             mainList.tableHeaderView = nil
         }
         self.mainList.reloadData() // update table
@@ -47,15 +47,15 @@ class MainListViewController: UITableViewController {
     @IBAction func refresh(sender: AnyObject) {
         self.setLoading(true)
         TLWebRequester.request("GET", url: BASE_URL,
-            {data in
+            doneOk: {data in
                 // okay
                 let jsonResult: NSArray? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as? NSArray
                 //println("AsSynchronous\(jsonResult)")
                 self.listData.removeAllObjects()
-                if (jsonResult != nil) {self.listData.addObjectsFromArray(jsonResult!)}
+                if (jsonResult != nil) {self.listData.addObjectsFromArray(jsonResult! as [AnyObject])}
                 self.setLoading(false)
             },
-            {() in
+            doneFail: {() in
                 // failure
                 self.setLoading(false)
                 return
@@ -103,7 +103,7 @@ class MainListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("myTableCell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("myTableCell", forIndexPath: indexPath) as! UITableViewCell
 
         // Configure the cell...
         var item = listData[indexPath.row] as? NSDictionary
@@ -111,25 +111,25 @@ class MainListViewController: UITableViewController {
         var lastmodified = item?.objectForKey("lastmodified") as? NSNumber
         let progress : Int? = state?.toInt()
         
-        (cell.viewWithTag(1) as UILabel).text = item?.objectForKey("name") as? String
-        (cell.viewWithTag(2) as UILabel).text = progress == nil ? state : state! + " %"
-        (cell.viewWithTag(3) as UIProgressView).hidden = progress == nil
-        (cell.viewWithTag(3) as UIProgressView).progress = progress == nil ? 0 : Float(progress!)/100
-        (cell.viewWithTag(4) as UILabel).text = MainListViewController.formatListItemDateTime(UInt64((lastmodified?.longLongValue)!))
+        (cell.viewWithTag(1) as! UILabel).text = item?.objectForKey("name") as? String
+        (cell.viewWithTag(2) as! UILabel).text = progress == nil ? state : state! + " %"
+        (cell.viewWithTag(3) as! UIProgressView).hidden = progress == nil
+        (cell.viewWithTag(3) as! UIProgressView).progress = progress == nil ? 0 : Float(progress!)/100
+        (cell.viewWithTag(4) as! UILabel).text = MainListViewController.formatListItemDateTime(UInt64((lastmodified?.longLongValue)!))
         return cell
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let alert = UIAlertController(title: nil, message: "Select Action", preferredStyle: UIAlertControllerStyle.ActionSheet)
         alert.addAction(UIAlertAction(title: "Restart", style: UIAlertActionStyle.Default, handler: {action in
-            self.startTask(((self.listData[indexPath.row] as NSDictionary).objectForKey("name") as String))
+            self.startTask(((self.listData[indexPath.row] as! NSDictionary).objectForKey("name") as! String))
             self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
         }))
         alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Default, handler: {action in
             self.setLoading(true)
-            TLWebRequester.request("DELETE", url: self.BASE_URL + ((self.listData[indexPath.row] as NSDictionary).objectForKey("name") as String).stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())!,
-                {data in self.refresh(self)},
-                {() in self.setLoading(false)}
+            TLWebRequester.request("DELETE", url: self.BASE_URL + ((self.listData[indexPath.row] as! NSDictionary).objectForKey("name") as! String).stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())!,
+                doneOk: {data in self.refresh(self)},
+                doneFail: {() in self.setLoading(false)}
             )
             self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
         }))
@@ -188,7 +188,7 @@ class MainListViewController: UITableViewController {
     */
 
     @IBAction func returnedFromStartTaskList(segue: UIStoryboardSegue) {
-        let startTaskView = segue.sourceViewController as StartTaskViewController
+        let startTaskView = segue.sourceViewController as! StartTaskViewController
         
         startTask(startTaskView.selectedJob!)
     }
@@ -196,8 +196,8 @@ class MainListViewController: UITableViewController {
     func startTask(taskName: String) {
         self.setLoading(true)
         TLWebRequester.request("GET", url: BASE_URL + taskName.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())! + "?set=pending",
-            {data in self.refresh(self)},
-            {() in self.setLoading(false)}
+            doneOk: {data in self.refresh(self)},
+            doneFail: {() in self.setLoading(false)}
         )
     }
 }

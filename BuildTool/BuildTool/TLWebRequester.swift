@@ -16,7 +16,7 @@ class TLWebRequester {
         req.HTTPMethod = method
         req.setValue("application/json", forHTTPHeaderField: "Accept")
 
-        NSURLConnection.sendAsynchronousRequest(req, queue: NSOperationQueue.mainQueue(), {(response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+        NSURLConnection.sendAsynchronousRequest(req, queue: NSOperationQueue.mainQueue(), completionHandler: {(response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             if (error != nil) {
                 doneFail?()
             } else {

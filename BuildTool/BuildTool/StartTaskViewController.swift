@@ -52,10 +52,10 @@ class StartTaskViewController: UITableViewController {
         self.isLoading = loading
         self.navigationItem.rightBarButtonItem?.enabled = !loading;
         if (loading) {
-            (self.loadIndicatorView.viewWithTag(1) as UIActivityIndicatorView).startAnimating()
+            (self.loadIndicatorView.viewWithTag(1) as! UIActivityIndicatorView).startAnimating()
             mainList.tableHeaderView = loadIndicatorView
         } else {
-            (self.loadIndicatorView.viewWithTag(1) as UIActivityIndicatorView).stopAnimating()
+            (self.loadIndicatorView.viewWithTag(1) as! UIActivityIndicatorView).stopAnimating()
             mainList.tableHeaderView = nil
         }
         self.mainList.reloadData() // update table
@@ -64,7 +64,7 @@ class StartTaskViewController: UITableViewController {
     func refresh() {
         self.setLoading(true)
         TLWebRequester.request("GET", url: BASE_URL + "jobs",
-            {data in
+            doneOk: {data in
                 // okay
                 let jsonResult: NSObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as? NSObject
 //                println("Joblist\(jsonResult)")
@@ -76,7 +76,7 @@ class StartTaskViewController: UITableViewController {
                     let jobListJson: NSArray? = NSJSONSerialization.JSONObjectWithData(jobListJsonStringData!, options: NSJSONReadingOptions.MutableContainers, error: nil) as? NSArray
                     var sectionList: Array<String> = []
                     for item in jobListJson! {
-                        var itemString: String = item as String
+                        var itemString: String = item as! String
                         if (itemString[itemString.startIndex] == "-") {
                             itemString = itemString.substringFromIndex(itemString.startIndex.successor())
                             self.sections.append(itemString)
@@ -90,7 +90,7 @@ class StartTaskViewController: UITableViewController {
                 }
                 self.setLoading(false)
             },
-            {() in
+            doneFail: {() in
                 // failure
                 self.setLoading(false)
                 return
@@ -107,7 +107,7 @@ class StartTaskViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("taskCell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("taskCell", forIndexPath: indexPath) as! UITableViewCell
 
         // Configure the cell...
         cell.textLabel?.text = jobList[indexPath.section][indexPath.row]
