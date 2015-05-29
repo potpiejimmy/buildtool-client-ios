@@ -133,6 +133,11 @@ class MainListViewController: UITableViewController {
             )
             self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
         }))
+        alert.addAction(UIAlertAction(title: "Clear List", style: UIAlertActionStyle.Default, handler: {action in
+            self.setLoading(true)
+            TLWebRequester.request("DELETE", url: self.BASE_URL, doneOk: {data in self.refresh(self)}, doneFail: {() in self.setLoading(false)})
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
+        }))
         alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {action in self.tableView.deselectRowAtIndexPath(indexPath, animated: false)}))
         
         self.presentViewController(alert, animated: true, completion: nil)
