@@ -10,7 +10,7 @@ import UIKit
 
 class MainListViewController: UITableViewController {
 
-    let BASE_URL = "http://www.doogetha.com/buildtool/res/jobs/w7-deffm0287/"
+    let BASE_URL = "http://www.doogetha.com/buildtool/res/jobs/w7-deffm0366/"
     
     @IBOutlet weak var mainList: UITableView!
     @IBOutlet weak var loadIndicatorView: UIView!
