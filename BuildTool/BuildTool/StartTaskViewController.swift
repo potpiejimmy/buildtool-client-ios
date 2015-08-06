@@ -10,7 +10,7 @@ import UIKit
 
 class StartTaskViewController: UITableViewController {
 
-    let BASE_URL = "http://www.doogetha.com/buildtool/res/params/w7-deffm0287/"
+    let BASE_URL = MainListViewController.BASE_URL_PREFIX + "params/" + MainListViewController.XXX_HOST_NAME + "/"
     
     var sections = ["Build","Database","Deploy"]
     var jobList = [

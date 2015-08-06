@@ -10,7 +10,10 @@ import UIKit
 
 class MainListViewController: UITableViewController {
 
-    let BASE_URL = "http://www.doogetha.com/buildtool/res/jobs/w7-deffm0366/"
+    static let XXX_HOST_NAME = "w7-deffm0366"
+    static let BASE_URL_PREFIX = "http://www.doogetha.com/buildtool/res/"
+    
+    let BASE_URL = BASE_URL_PREFIX + "jobs/" + XXX_HOST_NAME + "/"
     
     @IBOutlet weak var mainList: UITableView!
     @IBOutlet weak var loadIndicatorView: UIView!
