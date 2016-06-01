@@ -66,14 +66,14 @@ class StartTaskViewController: UITableViewController {
         TLWebRequester.request("GET", url: BASE_URL + "jobs",
             doneOk: {data in
                 // okay
-                let jsonResult: NSObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as? NSObject
+                let jsonResult: NSObject? = (try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers)) as? NSObject
 //                println("Joblist\(jsonResult)")
                 if (jsonResult != nil) {
                     self.sections.removeAll(keepCapacity: true)
                     self.jobList.removeAll(keepCapacity: true)
                     let jobListJsonString = jsonResult?.valueForKey("value") as? String
                     let jobListJsonStringData = jobListJsonString?.dataUsingEncoding(NSUTF8StringEncoding)
-                    let jobListJson: NSArray? = NSJSONSerialization.JSONObjectWithData(jobListJsonStringData!, options: NSJSONReadingOptions.MutableContainers, error: nil) as? NSArray
+                    let jobListJson: NSArray? = (try? NSJSONSerialization.JSONObjectWithData(jobListJsonStringData!, options: NSJSONReadingOptions.MutableContainers)) as? NSArray
                     var sectionList: Array<String> = []
                     for item in jobListJson! {
                         var itemString: String = item as! String
@@ -107,7 +107,7 @@ class StartTaskViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("taskCell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("taskCell", forIndexPath: indexPath) 
 
         // Configure the cell...
         cell.textLabel?.text = jobList[indexPath.section][indexPath.row]

@@ -11,16 +11,16 @@ import Foundation
 class TLWebRequester {
     
     class func request(method: String, url : String, doneOk: ((NSData)->Void)?, doneFail: (()->Void)?) {
-        var req = NSMutableURLRequest()
+        let req = NSMutableURLRequest()
         req.URL = NSURL(string: url)
         req.HTTPMethod = method
         req.setValue("application/json", forHTTPHeaderField: "Accept")
 
-        NSURLConnection.sendAsynchronousRequest(req, queue: NSOperationQueue.mainQueue(), completionHandler: {(response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+        NSURLConnection.sendAsynchronousRequest(req, queue: NSOperationQueue.mainQueue(), completionHandler: {(response: NSURLResponse?, data: NSData?, error: NSError?) -> Void in
             if (error != nil) {
                 doneFail?()
             } else {
-                doneOk?(data)
+                doneOk?(data!)
             }
         })
 

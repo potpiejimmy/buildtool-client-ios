@@ -52,7 +52,7 @@ class MainListViewController: UITableViewController {
         TLWebRequester.request("GET", url: BASE_URL,
             doneOk: {data in
                 // okay
-                let jsonResult: NSArray? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as? NSArray
+                let jsonResult: NSArray? = (try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers)) as? NSArray
                 //println("AsSynchronous\(jsonResult)")
                 self.listData.removeAllObjects()
                 if (jsonResult != nil) {self.listData.addObjectsFromArray(jsonResult! as [AnyObject])}
@@ -74,11 +74,11 @@ class MainListViewController: UITableViewController {
         let today = NSDate()
         let itemTime = NSDate(timeIntervalSince1970: NSTimeInterval(time/1000))
         
-        var cal = NSCalendar.currentCalendar()
-        var formatter = NSDateFormatter();
+        let cal = NSCalendar.currentCalendar()
+        let formatter = NSDateFormatter();
         
-        let todayComp    = cal.components(NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth |  NSCalendarUnit.CalendarUnitDay, fromDate: today)
-        let itemTimeComp = cal.components(NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth |  NSCalendarUnit.CalendarUnitDay, fromDate: itemTime)
+        let todayComp    = cal.components([NSCalendarUnit.Year, NSCalendarUnit.Month, NSCalendarUnit.Day], fromDate: today)
+        let itemTimeComp = cal.components([NSCalendarUnit.Year, NSCalendarUnit.Month, NSCalendarUnit.Day], fromDate: itemTime)
         
         if (todayComp.day == itemTimeComp.day &&
             todayComp.month == itemTimeComp.month &&
@@ -106,13 +106,13 @@ class MainListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("myTableCell", forIndexPath: indexPath) as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("myTableCell", forIndexPath: indexPath) 
 
         // Configure the cell...
-        var item = listData[indexPath.row] as? NSDictionary
+        let item = listData[indexPath.row] as? NSDictionary
         let state = item?.objectForKey("state") as? String
-        var lastmodified = item?.objectForKey("lastmodified") as? NSNumber
-        let progress : Int? = state?.toInt()
+        let lastmodified = item?.objectForKey("lastmodified") as? NSNumber
+        let progress : Int? = Int(state!)
         
         (cell.viewWithTag(1) as! UILabel).text = item?.objectForKey("name") as? String
         (cell.viewWithTag(2) as! UILabel).text = progress == nil ? state : state! + " %"
