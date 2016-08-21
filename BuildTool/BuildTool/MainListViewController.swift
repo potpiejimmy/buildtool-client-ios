@@ -30,8 +30,8 @@ class MainListViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-        
-        refresh(self)
+
+        startupInit();
     }
     
     func setLoading(loading: Bool) {
@@ -47,8 +47,24 @@ class MainListViewController: UITableViewController {
         self.mainList.reloadData() // update table
     }
     
-    @IBAction func refresh(sender: AnyObject) {
+    func startupInit() {
         self.setLoading(true)
+        waitForChanges();
+        refresh(self)
+    }
+    
+    func waitForChangesElapsed() {
+        waitForChanges();
+        refresh(self);
+    }
+    
+    func waitForChanges() {
+        TLWebRequester.request("GET", url: BASE_URL + "?waitForChange=true",
+                               doneOk: {data in self.waitForChangesElapsed()},
+                               doneFail: {() in self.waitForChangesElapsed()})
+    }
+    
+    func refresh(sender: AnyObject) {
         TLWebRequester.request("GET", url: BASE_URL,
             doneOk: {data in
                 // okay
@@ -131,14 +147,14 @@ class MainListViewController: UITableViewController {
         alert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Default, handler: {action in
             self.setLoading(true)
             TLWebRequester.request("DELETE", url: self.BASE_URL + ((self.listData[indexPath.row] as! NSDictionary).objectForKey("name") as! String).stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())!,
-                doneOk: {data in self.refresh(self)},
+                doneOk: nil,
                 doneFail: {() in self.setLoading(false)}
             )
             self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
         }))
         alert.addAction(UIAlertAction(title: "Clear List", style: UIAlertActionStyle.Default, handler: {action in
             self.setLoading(true)
-            TLWebRequester.request("DELETE", url: self.BASE_URL, doneOk: {data in self.refresh(self)}, doneFail: {() in self.setLoading(false)})
+            TLWebRequester.request("DELETE", url: self.BASE_URL, doneOk: nil, doneFail: {() in self.setLoading(false)})
             self.tableView.deselectRowAtIndexPath(indexPath, animated: false)
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: {action in self.tableView.deselectRowAtIndexPath(indexPath, animated: false)}))
@@ -204,7 +220,7 @@ class MainListViewController: UITableViewController {
     func startTask(taskName: String) {
         self.setLoading(true)
         TLWebRequester.request("GET", url: BASE_URL + taskName.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())! + "?set=pending",
-            doneOk: {data in self.refresh(self)},
+            doneOk: nil,
             doneFail: {() in self.setLoading(false)}
         )
     }
