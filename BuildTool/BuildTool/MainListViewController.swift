@@ -21,6 +21,7 @@ class MainListViewController: UITableViewController {
     var listData = NSMutableArray()
     
     var isLoading = false
+    var mLastWaitForChangeRequest = NSDate()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,9 +60,14 @@ class MainListViewController: UITableViewController {
     }
     
     func waitForChanges() {
+        self.mLastWaitForChangeRequest = NSDate()
         TLWebRequester.request("GET", url: BASE_URL + "?waitForChange=true",
                                doneOk: {data in self.waitForChangesElapsed()},
-                               doneFail: {() in self.waitForChangesElapsed()})
+                               doneFail: {() in
+                                   if (NSDate().timeIntervalSinceDate(self.mLastWaitForChangeRequest) > 1) {
+                                       self.waitForChangesElapsed()
+                                   }
+                               })
     }
     
     func refresh(sender: AnyObject) {
