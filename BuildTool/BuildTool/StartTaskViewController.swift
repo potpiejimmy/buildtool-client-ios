@@ -44,13 +44,13 @@ class StartTaskViewController: UITableViewController {
         super.viewDidLoad()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         refresh();
     }
 
-    func setLoading(loading: Bool) {
+    func setLoading(_ loading: Bool) {
         self.isLoading = loading
-        self.navigationItem.rightBarButtonItem?.enabled = !loading;
+        self.navigationItem.rightBarButtonItem?.isEnabled = !loading;
         if (loading) {
             (self.loadIndicatorView.viewWithTag(1) as! UIActivityIndicatorView).startAnimating()
             mainList.tableHeaderView = loadIndicatorView
@@ -66,19 +66,19 @@ class StartTaskViewController: UITableViewController {
         TLWebRequester.request("GET", url: BASE_URL + "jobs",
             doneOk: {data in
                 // okay
-                let jsonResult: NSObject? = (try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers)) as? NSObject
+                let jsonResult: NSObject? = (try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.mutableContainers)) as? NSObject
 //                println("Joblist\(jsonResult)")
                 if (jsonResult != nil) {
-                    self.sections.removeAll(keepCapacity: true)
-                    self.jobList.removeAll(keepCapacity: true)
-                    let jobListJsonString = jsonResult?.valueForKey("value") as? String
-                    let jobListJsonStringData = jobListJsonString?.dataUsingEncoding(NSUTF8StringEncoding)
-                    let jobListJson: NSArray? = (try? NSJSONSerialization.JSONObjectWithData(jobListJsonStringData!, options: NSJSONReadingOptions.MutableContainers)) as? NSArray
+                    self.sections.removeAll(keepingCapacity: true)
+                    self.jobList.removeAll(keepingCapacity: true)
+                    let jobListJsonString = jsonResult?.value(forKey: "value") as? String
+                    let jobListJsonStringData = jobListJsonString?.data(using: String.Encoding.utf8)
+                    let jobListJson: NSArray? = (try? JSONSerialization.jsonObject(with: jobListJsonStringData!, options: JSONSerialization.ReadingOptions.mutableContainers)) as? NSArray
                     var sectionList: Array<String> = []
                     for item in jobListJson! {
                         var itemString: String = item as! String
                         if (itemString[itemString.startIndex] == "-") {
-                            itemString = itemString.substringFromIndex(itemString.startIndex.successor())
+                            itemString = itemString.substring(from: itemString.characters.index(after: itemString.startIndex))
                             self.sections.append(itemString)
                             if (sectionList.count > 0) {self.jobList.append(sectionList)}
                             sectionList = []
@@ -97,17 +97,17 @@ class StartTaskViewController: UITableViewController {
         })
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         // Return the number of sections.
         return self.isLoading ? 0 : jobList.count
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.isLoading ? 0 : jobList[section].count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("taskCell", forIndexPath: indexPath) 
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "taskCell", for: indexPath) 
 
         // Configure the cell...
         cell.textLabel?.text = jobList[indexPath.section][indexPath.row]
@@ -115,12 +115,12 @@ class StartTaskViewController: UITableViewController {
         return cell
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.selectedJob = jobList[indexPath.section][indexPath.row]
-        self.performSegueWithIdentifier("exitSegue", sender: self)
+        self.performSegue(withIdentifier: "exitSegue", sender: self)
     }
 
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return sections[section]
     }
     
